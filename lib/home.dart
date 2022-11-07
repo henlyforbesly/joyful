@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -8,32 +7,89 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  var data = [
+    {
+      'name': 'Pergi ke pasar',
+      'isChecked': false,
+    },
+    {
+      'name': 'Merapikan baju Emak',
+      'isChecked': true,
+    },
+    {
+      'name': 'Cuci piring aja',
+      'isChecked': false,
+    },
+  ];
+  var sortedData = [];
+
   @override
   Widget build(BuildContext context) {
+    sortedData = sortTaskList(data);
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('JOYFUL'),
       ),
-      body: Column(
-        children: [
-           Dismissible(
-                direction: DismissDirection.endToStart,
-                key: const Key('1'),
-                onDismissed: (direction) {
-                  // Removes that item the list on swipwe
-                  setState(() {
-                  });
-                  // Shows the information on Snackbar
-                  //Scaffold.of(context)
-                      //.showSnackBar(SnackBar(content: Text("item telah dihapus")));
-                },
-                background: Container(color: Colors.red),
-                secondaryBackground: Container(color: Colors.green) ,
-                child: ListTile(title: Text('tugas 1')),
-              )
-        ],
-      ) ,
-
+      body: Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: sortedData.length,
+              itemBuilder: (context, index) {
+                return Card(
+                  clipBehavior: Clip.hardEdge,
+                  child: InkWell(
+                    splashColor: Colors.amber[300]!.withAlpha(30),
+                    onTap: () {},
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Checkbox(
+                            value: sortedData[index]['isChecked'] as bool,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                sortedData[index]['isChecked'] = value!;
+                              });
+                            },
+                          ),
+                          Expanded(
+                            child: Text(
+                              '${sortedData[index]['name']}',
+                              style: TextStyle(decoration: sortedData[index]['isChecked'] == true ? TextDecoration.lineThrough : TextDecoration.none),
+                            ),
+                          ),
+                          const Icon(Icons.close, color: Colors.red),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: Icon(Icons.add, color: Colors.white),
+      ),
     );
   }
+}
+
+List sortTaskList(dynamic data) {
+  var isCheckedFalse = [];
+  var isCheckedTrue = [];
+
+  for (var datum in data) {
+    datum['isChecked'] == true ? isCheckedTrue.add(datum) : isCheckedFalse.add(datum);
+  }
+
+  return isCheckedFalse + isCheckedTrue;
 }
