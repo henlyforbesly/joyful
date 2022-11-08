@@ -26,7 +26,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     sortedData = sortTaskList(data);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('JOYFUL'),
@@ -75,6 +75,17 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: const [
+            ListTile(
+              title: Text('Dark Mode'),
+              trailing: DarkModeSwitch(),
+            ),
+          ],
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         child: Icon(Icons.add, color: Colors.white),
@@ -92,4 +103,27 @@ List sortTaskList(dynamic data) {
   }
 
   return isCheckedFalse + isCheckedTrue;
+}
+
+class DarkModeSwitch extends StatefulWidget {
+  const DarkModeSwitch({super.key});
+
+  @override
+  State<DarkModeSwitch> createState() => _DarkModeSwitchState();
+}
+
+class _DarkModeSwitchState extends State<DarkModeSwitch> {
+  bool isChecked = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Switch(
+      value: isChecked,
+      onChanged: (value) {
+        setState(() {
+          isChecked = value;
+        });
+      },
+    );
+  }
 }
