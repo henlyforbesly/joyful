@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:joyful/add_page.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -87,8 +88,12 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(Icons.add, color: Colors.white),
+        onPressed: () {
+          Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const AddPage())
+          );
+        },
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'AddPage.dart';
-import 'home.dart';
+import 'home_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,11 +16,11 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'JOYFUL',
       theme: ThemeData(
         primarySwatch: Colors.amber,
       ),
-      home: AddPage(),
+      home: const HomePage(),
       debugShowCheckedModeBanner: false,
     );
   }

@@ -10,14 +10,14 @@ class AddPage extends StatefulWidget {
 }
 
 class _AddPageState extends State<AddPage> {
-    
+
 DateTime now = DateTime.now();
 
 TextEditingController _date = TextEditingController();
 TextEditingController _time = TextEditingController();
 
 
- 
+
   @override
 void initState() {
     _time.text  = "";
@@ -27,7 +27,7 @@ void initState() {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('JOYFULL'),
+        title: Text('Add Task'),
       ),
       body:Container(
         padding: EdgeInsets.all(20.0),
@@ -53,8 +53,8 @@ void initState() {
               ),
               onTap: () async {
                 DateTime? pickeddate = await showDatePicker(
-                  context: context, 
-                  initialDate:DateTime.now() , 
+                  context: context,
+                  initialDate:DateTime.now() ,
                   firstDate: DateTime(2000),
                    lastDate: DateTime(3000));
 
@@ -64,7 +64,7 @@ void initState() {
                     });
                    }
               },
-            ),            
+            ),
             ),
             SizedBox(height: 20,),
           Padding(
@@ -77,7 +77,7 @@ void initState() {
               ),
               onTap: () async {
                 TimeOfDay? pickedtime= await showTimePicker(context: context, initialTime: TimeOfDay.now());
-  
+
                    if(pickedtime != null){
                     setState(() {
                       print(pickedtime.format(context));
@@ -85,14 +85,14 @@ void initState() {
                        String formattedTime = DateFormat('HH:mm:ss').format(parsedTime);
                         print(formattedTime);
                          setState(() {
-                       _time.text = formattedTime; //set the value of text field. 
+                       _time.text = formattedTime; //set the value of text field.
                       });
                     });
                    }else{
                     print("time is not selected");
                    }
               },
-            ),            
+            ),
             ),
         SizedBox(height: 80,),
          TextField(
@@ -109,7 +109,7 @@ void initState() {
                 style: TextButton.styleFrom(
                   backgroundColor: Color.fromARGB(255, 239, 198, 63)
                 ),
-              onPressed: (){}, 
+              onPressed: (){},
             child: Text(
               "ADD",style: TextStyle(
               color: Color(0xFF000000)
@@ -117,16 +117,16 @@ void initState() {
             ),
             ),
           )
-      ], 
+      ],
     ),
   ),
-  
-  
+
+
  );
- 
+
 }
 
- 
-  
-  
+
+
+
 }
