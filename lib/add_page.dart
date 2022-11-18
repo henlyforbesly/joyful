@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:date_time_picker/date_time_picker.dart';
 import 'package:intl/intl.dart';
+import 'Provider/Theme_data.dart';
+import 'Provider/dark_theme_preferences.dart';
+import 'Provider/main_provider.dart';
 
 class AddPage extends StatefulWidget {
   const AddPage({super.key});

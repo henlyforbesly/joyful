@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:joyful/add_page.dart';
+import 'package:provider/provider.dart';
+import 'Provider/main_provider.dart';
+import 'Provider/dark_theme_preferences.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -27,7 +30,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     sortedData = sortTaskList(data);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('JOYFUL'),
@@ -118,17 +120,16 @@ class DarkModeSwitch extends StatefulWidget {
 }
 
 class _DarkModeSwitchState extends State<DarkModeSwitch> {
-  bool isChecked = false;
 
   @override
   Widget build(BuildContext context) {
-    return Switch(
-      value: isChecked,
-      onChanged: (value) {
-        setState(() {
-          isChecked = value;
-        });
-      },
-    );
+    final themeChange = Provider.of<DarkThemeIcon>(context);
+      
+        return Switch.adaptive(
+          value: themeChange.darkTheme1,
+          onChanged: (value) {
+            themeChange.toogleTheme();
+          },
+        );
+      }
   }
-}
