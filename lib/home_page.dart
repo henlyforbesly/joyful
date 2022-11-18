@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:joyful/add_page.dart';
+import 'package:joyful/db/db_helper.dart';
+import 'package:joyful/form_task.dart';
+import 'package:joyful/model/task.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -8,106 +11,149 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  var data = [
-    {
-      'name': 'Pergi ke pasar',
-      'isChecked': false,
-    },
-    {
-      'name': 'Merapikan baju Emak',
-      'isChecked': true,
-    },
-    {
-      'name': 'Cuci piring aja',
-      'isChecked': false,
-    },
-  ];
-  var sortedData = [];
+  List<Task> listTask = [];
+  DbHelper db = DbHelper();
+
+  @override
+  void initState() {
+    super.initState();
+    _getAllTask();
+  }
 
   @override
   Widget build(BuildContext context) {
-    sortedData = sortTaskList(data);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('JOYFUL'),
       ),
-      body: Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: sortedData.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  clipBehavior: Clip.hardEdge,
-                  child: InkWell(
-                    splashColor: Colors.amber[300]!.withAlpha(30),
-                    onTap: () {},
-                    child: Padding(
-                      padding:
-                          const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Checkbox(
-                            value: sortedData[index]['isChecked'] as bool,
-                            onChanged: (bool? value) {
-                              setState(() {
-                                sortedData[index]['isChecked'] = value!;
-                              });
-                            },
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: listTask.length,
+                  itemBuilder: (context, index) {
+                    Task task = listTask[index];
+
+                    return Card(
+                      clipBehavior: Clip.hardEdge,
+                      child: InkWell(
+                        splashColor: Colors.amber[300]!.withAlpha(30),
+                        onTap: () {
+                          _openFormEdit(task);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 15),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Checkbox(
+                                value: task.isCompleted == 0 ? false : true,
+                                onChanged: (bool? value) {
+                                  markTaskCompleted(task, index);
+                                },
+                              ),
+                              Expanded(
+                                child: Text(
+                                  '${task.task}',
+                                  style: TextStyle(
+                                      decoration: task.isCompleted == 1
+                                          ? TextDecoration.lineThrough
+                                          : TextDecoration.none),
+                                ),
+                              ),
+                              IconButton(
+                                  onPressed: () {
+                                    _deleteTask(task, index);
+                                  },
+                                  icon: const Icon(Icons.close,
+                                      color: Colors.red)),
+                            ],
                           ),
-                          Expanded(
-                            child: Text(
-                              '${sortedData[index]['name']}',
-                              style: TextStyle(decoration: sortedData[index]['isChecked'] == true ? TextDecoration.lineThrough : TextDecoration.none),
-                            ),
-                          ),
-                          const Icon(Icons.close, color: Colors.red),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                );
-              },
+                    );
+                  },
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: const [
-            ListTile(
-              title: Text('Dark Mode'),
-              trailing: DarkModeSwitch(),
-            ),
-          ],
+      drawer: SafeArea(
+        child: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: const [
+              ListTile(
+                title: Text('Dark Mode'),
+                trailing: DarkModeSwitch(),
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const AddPage())
-          );
+          _openFormCreate();
         },
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
-}
 
-List sortTaskList(dynamic data) {
-  var isCheckedFalse = [];
-  var isCheckedTrue = [];
-
-  for (var datum in data) {
-    datum['isChecked'] == true ? isCheckedTrue.add(datum) : isCheckedFalse.add(datum);
+  Future<void> _getAllTask() async {
+    var list = await db.getAllTask();
+    setState(() {
+      listTask.clear();
+      for (var task in list!) {
+        listTask.add(Task.fromMap(task));
+      }
+    });
   }
 
-  return isCheckedFalse + isCheckedTrue;
+  Future<void> _openFormCreate() async {
+    var result = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const FormTask()));
+    if (result == 'save') {
+      await _getAllTask();
+    }
+  }
+
+  Future<void> _openFormEdit(Task task) async {
+    var result = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => FormTask(task: task)));
+    if (result == 'update') {
+      await _getAllTask();
+    }
+  }
+
+  Future<void> _deleteTask(Task task, int index) async {
+    await db.deleteTask(task.id!);
+
+    setState(() {
+      listTask.removeAt(index);
+    });
+  }
+
+  Future<void> markTaskCompleted(Task task, int index) async {
+    await db.markTaskCompleted(Task.fromMap({
+      'id': task.id,
+      'task': task.task,
+      'date': task.date,
+      'time': task.time,
+      'description': task.description,
+      'isCompleted': task.isCompleted == 0 ? 1 : 0,
+    }));
+
+    setState(() {
+      listTask[index].isCompleted = task.isCompleted == 0 ? 1 : 0;
+    });
+  }
 }
 
 class DarkModeSwitch extends StatefulWidget {
